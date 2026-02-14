@@ -1,0 +1,32 @@
+# --- C/C++ Compiled Binaries ---
+*.o
+*.out
+*.elf
+*.bin
+*.hex
+*.map
+suite          # This is the executable name from our autograder command
+
+# --- IDE & Build Folders ---
+build/
+.vscode/
+.idea/
+*.swp
+*~
+
+# --- OS Specific ---
+.DS_Store
+Thumbs.db
+
+# --- Hardware / KiCad (Optional but recommended) ---
+# Ignore KiCad backup files, leave the .kicad_pcb and .kicad_sch
+**/*.bak
+**/*.cadbak
+**/*.lck
+**/*-backups/
+fp-info-cache
+
+# --- Python / Analysis ---
+__pycache__/
+*.pyc
+.ipynb_checkpoints/

@@ -1,0 +1,26 @@
+name: GitHub Classroom Workflow
+
+on: [push]
+
+permissions:
+  checks: write
+  actions: read
+  contents: read
+
+jobs:
+  build:
+    name: Virtual Rig Audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      # Step 1: Python Register Check
+      - name: Verify I2C Register Contract
+        run: python3 firmware/tests/verify_registers.py
+
+      # Step 2: Physics/DSP Unit Test
+      - name: Verify DOA Logic (C Compilation)
+        run: |
+          gcc -std=c11 firmware/src/doa_engine.c firmware/tests/test_main.c \
+          -I firmware/include -o doa_test -lm
+          ./doa_test
