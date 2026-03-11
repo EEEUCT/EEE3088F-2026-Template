@@ -9,6 +9,31 @@ Before submitting, ensure the following three files are present and named correc
 - [ ] `BOM.csv` (Bill of Materials with LCSC part numbers)
 - [ ] `CPL.csv` (Component Placement / Centroid file)
 
+#### **A. The Gerber Archive (.zip)**
+
+This archive must contain the physical layers of your PCB.
+
+*   **Mandatory Layers:** Top/Bottom Copper, Top/Bottom Solder Mask, Top/Bottom Silkscreen, and a **Board Outline** (on a Mechanical or Keep-out layer).
+*   **Drill File:** Must be in **Excellon** format.
+*   **Verification:** Use an online Gerber Viewer to ensure your mounting holes and board edges are visible. If they aren't in the viewer, they won't be on the physical board.
+
+#### **B. The Bill of Materials (BOM.csv)**
+
+This file tells the assembly house what to buy. It **must** include these columns:
+
+1.  **Designator:** (e.g., C1, U2, R5)
+2.  **LCSC Part Number:** (e.g., C1597). **This is the mandatory identifier.**
+3.  **Quantity:** Number of units per board.
+4.  **Footprint:** (e.g., 0603, SOT-23).
+    
+#### **C. The Component Placement File (CPL.csv)**
+
+This file tells the robot where to place the parts.
+
+1.  **Required Columns:** Designator, Mid X, Mid Y, Layer, Rotation.
+2.  **Units:** Must be in **millimeters (mm)**.
+3.  **Rotation:** You must verify that the orientation in this file matches the "Pin 1" marker on your PCB.
+   
 ---
 
 ## ⚠️ Critical Compliance Audit
