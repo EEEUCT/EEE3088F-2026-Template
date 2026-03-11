@@ -1,53 +1,48 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdint.h>
 #include <math.h>
-#include <assert.h>
 #include "doa_engine.h"
+#include "public_vectors.h"
 
-#define PI 3.14159265358979323846
-#define SPEED_OF_SOUND 343.0 // m/s
-
-void generate_test_buffers(int16_t* left, int16_t* right, size_t N, float target_angle_deg, float d_mm, uint32_t fs) {
-    float freq = 1000.0; // 1kHz test tone
-    float d_m = d_mm / 1000.0;
+// Helper to run individual cases
+int run_sanity_check(const char* name, const int16_t* l, const int16_t* r, int8_t expected) {
+    size_t N = 500;
+    float d_mm = 40.0;
+    uint32_t fs = 100000;
     
-    // Time delay: delta_t = (d * sin(theta)) / v
-    float target_rad = target_angle_deg * (PI / 180.0);
-    float delta_t = (d_m * sin(target_rad)) / SPEED_OF_SOUND;
+    int8_t result = calculate_doa_angle_2mic(l, r, N, d_mm, fs);
+    
+    printf("[%s] Expected: %d, Got: %d ", name, expected, result);
+    
+    // Check for error code
+    if (result == -128) {
+        printf("-> FAIL (Error Code -128)\n");
+        return 1;
+    }
 
-    for (size_t i = 0; i < N; i++) {
-        float t = (float)i / fs;
-        left[i] = (int16_t)(10000 * sin(2 * PI * freq * t));
-        right[i] = (int16_t)(10000 * sin(2 * PI * freq * (t - delta_t)));
+    // Tolerance of +/- 2 degrees for clean synthetic data
+    if (abs(result - expected) <= 2) {
+        printf("-> PASS\n");
+        return 0;
+    } else {
+        printf("-> FAIL (Outside Tolerance)\n");
+        return 1;
     }
 }
 
 int main() {
-    uint32_t fs = 48000;
-    size_t N = 1024;
-    float d_mm = 50.0;
-    int16_t* mic_L = malloc(N * sizeof(int16_t));
-    int16_t* mic_R = malloc(N * sizeof(int16_t));
+    printf("--- EEE3088F DoA Engine Sanity Check ---\n");
+    int errors = 0;
 
-    // Test Case: 30 Degrees
-    int8_t expected = 30;
-    generate_test_buffers(mic_L, mic_R, N, (float)expected, d_mm, fs);
-    
-    int8_t result = calculate_doa_angle_2mic(mic_L, mic_R, N, d_mm, fs);
+    errors += run_sanity_check("0 DEG ", test_0_deg_mic_left, test_0_deg_mic_right, 0);
+    errors += run_sanity_check("30 DEG", test_30_deg_mic_left, test_30_deg_mic_right, 30);
+    errors += run_sanity_check("-45 DEG", test_minus_45_deg_mic_left, test_minus_45_deg_mic_right, -45);
 
-    printf("Testing 30 degrees... Result: %d\n", result);
-    
-    // Allow for +/- 2 degree tolerance due to sampling quantization
-    if (abs(result - expected) <= 2) {
-        printf("PASSED\n");
+    if (errors == 0) {
+        printf("\nRESULT: ALL PUBLIC TESTS PASSED. Ready for GitHub push.\n");
+        return 0;
     } else {
-        printf("FAILED: Expected ~%d, got %d\n", expected, result);
-        free(mic_L); free(mic_R);
-        return 1; // Exit with error for GitHub Autograder
+        printf("\nRESULT: %d TEST(S) FAILED.\n", errors);
+        return 1;
     }
-
-    free(mic_L);
-    free(mic_R);
-    return 0;
 }
