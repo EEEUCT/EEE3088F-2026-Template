@@ -76,7 +76,7 @@ int main() {
         
         // Classify Test Case based on name and angle
         int is_noisy = (strstr(t.name, "noisy") != NULL || strstr(t.name, "quiet") != NULL);
-        int is_edge = (abs(t.expected_angle) >= 60);
+        int is_edge = (abs(t.expected_angle) >= 45); // Widened definition of 'edge'
         int is_center = (abs(t.expected_angle) <= 15);
 
         if (is_noisy) total_noise_cases++;
@@ -144,13 +144,13 @@ int main() {
             printf("(!) BASIC MATH: You are failing tests near 0 degrees (Boresight).\n");
             printf("    Check your lag-to-angle formula and index calculations.\n");
         }
-        else if (edge_fails > (total_edge_cases / 2)) {
-            printf("(!) ENDFIRE ISSUES: High error rates at large angles (>60 deg).\n");
+        else if (edge_fails > 0) {
+            printf("(!) ENDFIRE ISSUES: Errors detected at large angles (>45 deg).\n");
             printf("    The derivative of asin(x) explodes near x=1, magnifying small timing errors.\n");
             printf("    Ensure you clamp the argument to [-1.0, 1.0] before calling asin().\n");
         }
         
-        if (noise_fails > (total_noise_cases / 2)) {
+        if (noise_fails > 0) {
             printf("(!) NOISE SENSITIVITY: Your algorithm is struggling with noisy signals.\n");
             printf("    Consider averaging multiple correlation windows or pre-filtering the data.\n");
         }
