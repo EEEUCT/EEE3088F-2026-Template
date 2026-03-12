@@ -8,6 +8,8 @@
 suite          # Executable name from autograder
 test_doa
 i2c_audit
+firmware/solutions/
+toggle_solutions.sh
 
 # --- IDE & Build Folders ---
 build/

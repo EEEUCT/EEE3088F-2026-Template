@@ -5,6 +5,17 @@ on:
     branches: [ "*" ]
   pull_request:
     branches: [ "*" ]
+  workflow_dispatch:
+    inputs:
+      solution_mode:
+        description: 'Inject Instructor Solution?'
+        required: true
+        default: false
+        type: boolean
+
+env:
+  # Suppress Node.js 20 deprecation warnings by opting into Node 24 early
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   grade:
@@ -19,6 +30,15 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y gcc python3 python3-numpy
+
+      # -----------------------------------------------------------------------
+      # [ADMIN] SOLUTION INJECTION
+      # -----------------------------------------------------------------------
+      - name: "[Admin] Inject Instructor Solution"
+        if: ${{ inputs.solution_mode == true }}
+        run: |
+          echo "${{ secrets.DOA_SOLUTION_BASE64 }}" | base64 -d > firmware/src/doa_engine.c
+          echo "::notice::Instructor Solution Injected. Expecting 100% pass."
 
       # -----------------------------------------------------------------------
       # PHASE 1: I2C & REGISTER MAP AUDIT
