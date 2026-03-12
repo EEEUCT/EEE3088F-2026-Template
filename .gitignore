@@ -6,6 +6,8 @@
 *.hex
 *.map
 suite          # Executable name from autograder
+test_doa
+i2c_audit
 
 # --- IDE & Build Folders ---
 build/

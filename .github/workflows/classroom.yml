@@ -31,6 +31,7 @@ jobs:
         run: |
           gcc -std=c11 \
             firmware/src/i2c_slave.c \
+            firmware/src/doa_engine.c \
             firmware/tests/test_i2c_logic.c \
             -I firmware/include \
             -o i2c_audit -lm

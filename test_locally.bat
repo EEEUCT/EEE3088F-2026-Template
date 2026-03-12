@@ -14,7 +14,7 @@ if %errorlevel% neq 0 (
 
 echo.
 echo --- 2. COMPILING & RUNNING I2C LOGIC TEST ---
-gcc -std=c11 firmware\src\i2c_slave.c firmware\tests\test_i2c_logic.c -I firmware\include -o firmware\tests\i2c_audit.exe -lm
+gcc -std=c11 firmware\src\i2c_slave.c firmware\src\doa_engine.c firmware\tests\test_i2c_logic.c -I firmware\include -o firmware\tests\i2c_audit.exe -lm
 if %errorlevel% neq 0 (
     echo ^>^>^> FAIL: Compilation Error (I2C Logic)
     exit /b 1
