@@ -15,7 +15,7 @@ on:
 
 env:
   # Suppress Node.js 20 deprecation warnings by opting into Node 24 early
-  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: 'true'
 
 jobs:
   grade:
