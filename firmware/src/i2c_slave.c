@@ -23,6 +23,7 @@ void handle_i2c_write(uint8_t reg_addr, uint8_t data) {
         /* * TODO: Signal your main loop that a measurement is requested.
          * Example: set a 'measurement_pending' flag to 1.
          */
+        /* Note: The main loop polls 'my_registers.status' to detect this request. */
     }
 }
 
@@ -52,11 +53,11 @@ void process_doa_update(float d_mm, uint32_t fs) {
     if (my_registers.status == STATUS_BUSY) {
         
         /* 1. Perform the DSP math defined in doa_engine.c */
-        /* TODO: int8_t result = calculate_doa_angle_2mic(mic_L, mic_R, 1024, d_mm, fs); */
+        int8_t result = calculate_doa_angle_2mic(mic_L, mic_R, 1024, d_mm, fs);
 
         /* 2. Update the Memory Map with the results */
-        /* TODO: my_registers.doa_result = result; */
-        /* TODO: my_registers.confidence = [Calculated Score]; */
+        my_registers.doa_result = result;
+        my_registers.confidence = 100; // Static confidence (DoA engine does not return score)
 
         /* 3. Handshake: Signal to the Automated Rig that data is now valid */
         my_registers.status = STATUS_READY;
