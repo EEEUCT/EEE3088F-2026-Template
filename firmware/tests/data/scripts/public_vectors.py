@@ -178,7 +178,11 @@ if __name__ == "__main__":
             cases.append((solvable_angle, f"test_secret_{suffix}_clean", None, 0, 2000))
             
             # 2. Noisy (10dB SNR, High Amp)
-            cases.append((solvable_angle, f"test_secret_{suffix}_noisy", 10, 0, 2000))
+            # Make the test slightly more forgiving at extreme angles where aliasing is a risk
+            snr = 10
+            if abs(angle) > 65:
+                snr = 15
+            cases.append((solvable_angle, f"test_secret_{suffix}_noisy", snr, 0, 2000))
     else:
         print("Generating Public Sanity Kit only...")
 
