@@ -14,7 +14,7 @@ import os
 
 # --- Rig Constants ---
 FS = 100000           # 100 kSPS (Sample Rate)
-F_TONE = 4000.0       # 4 kHz Tone (Target Frequency)
+F_TONE = 2500.0       # 2.5 kHz Tone (Matches I2C Contract, prevents Aliasing)
 D_MM = 40.0           # 40mm spacing (Distance between mics)
 C_SPEED = 343.0       # Speed of sound (m/s) at 20C
 N_SAMPLES = 500       # 5ms of data (buffer size)
@@ -179,9 +179,7 @@ if __name__ == "__main__":
             
             # 2. Noisy (10dB SNR, High Amp)
             # Make the test slightly more forgiving at extreme angles where aliasing is a risk
-            snr = 10
-            if abs(angle) > 55: # Higher angles have 1/cos(theta) error amplification
-                snr = 25        # Boost SNR to prevent catastrophic outliers at edges
+            snr = 15 # Standardize noisy tests to 15dB (Fair challenge for 2.5kHz)
             cases.append((solvable_angle, f"test_secret_{suffix}_noisy", snr, 0, 2000))
     else:
         print("Generating Public Sanity Kit only...")
