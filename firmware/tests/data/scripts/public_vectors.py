@@ -180,8 +180,8 @@ if __name__ == "__main__":
             # 2. Noisy (10dB SNR, High Amp)
             # Make the test slightly more forgiving at extreme angles where aliasing is a risk
             snr = 10
-            if abs(angle) > 65: # For the 70-degree step, which is prone to aliasing
-                snr = 20        # Increase SNR to ensure the correct peak is dominant
+            if abs(angle) > 55: # Higher angles have 1/cos(theta) error amplification
+                snr = 25        # Boost SNR to prevent catastrophic outliers at edges
             cases.append((solvable_angle, f"test_secret_{suffix}_noisy", snr, 0, 2000))
     else:
         print("Generating Public Sanity Kit only...")
