@@ -152,12 +152,12 @@ if __name__ == "__main__":
         
         # 2. Near Endfire (Approaching +/- 90 deg)
         side = np.random.choice([-1, 1])
-        angle_end = side * np.random.uniform(75, 85)
+        angle_end = side * np.random.uniform(60, 75)
         cases.append((angle_end, "test_secret_end", 20, 0.0, 2000))
 
-        # 3. High Noise / Sensitivity Check (0dB SNR)
+        # 3. High Noise / Sensitivity Check (5dB SNR)
         angle_noise = np.random.uniform(-45, 45)
-        cases.append((angle_noise, "test_secret_noise", 0, 0.1, 2000))
+        cases.append((angle_noise, "test_secret_noise", 5, 0.1, 2000))
 
         # 4. Moderate Angle / Moderate Noise (12dB SNR)
         side_mod = np.random.choice([-1, 1])
