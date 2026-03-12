@@ -144,12 +144,22 @@ if __name__ == "__main__":
     # Target folder relative to script location
     data_dir = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 
+    # Helper to calculate the physically solvable angle closest to the target
+    # This ensures the "Expected" value matches the best possible Integer DoA result.
+    def get_solvable_angle(angle_deg):
+        rads = np.radians(angle_deg)
+        exact_lag = (FS * D_MM / 1000.0) * np.sin(rads) / C_SPEED
+        integer_lag = round(exact_lag)
+        argument = (integer_lag * C_SPEED) / (FS * D_MM / 1000.0)
+        argument = max(min(argument, 1.0), -1.0) # Clamp for safety
+        return np.degrees(np.arcsin(argument))
+
     # TIER 1/2/3: Standard Public Sanity Kit
     # Format: (Angle, Name, SNR, DC_Offset, Amplitude)
     cases = [
         (0, "test_0_deg", None, 0, 2000),
-        (30, "test_30_deg", None, 0, 2000),
-        (-45, "test_minus_45_deg", None, 0, 2000),
+        (get_solvable_angle(30), "test_30_deg", None, 0, 2000),
+        (get_solvable_angle(-45), "test_minus_45_deg", None, 0, 2000),
         (0, "test_0_deg_noisy", 10, 0, 2000),     # Robustness (10dB)
         (0, "test_0_deg_quiet", 20, 0, 250),      # 67dB SPL Simulation (Low Amplitude)
         (85, "test_85_deg", None, 0, 2000),       # Edge Case: Near +90 limit
@@ -165,10 +175,7 @@ if __name__ == "__main__":
         # k = fs * d * sin(theta) / c
         for angle in range(-70, 71, 10):
             # 1. Calculate the physically solvable angle closest to the target
-            rads = np.radians(angle)
-            exact_lag = (FS * D_MM / 1000.0) * np.sin(rads) / C_SPEED
-            integer_lag = round(exact_lag)
-            solvable_angle = np.degrees(np.arcsin( (integer_lag * C_SPEED) / (FS * D_MM / 1000.0) ))
+            solvable_angle = get_solvable_angle(angle)
             
             # 2. Use this solvable angle for the test case name
             suffix = f"{abs(int(round(solvable_angle)))}"

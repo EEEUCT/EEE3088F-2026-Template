@@ -33,11 +33,11 @@ extern const int test_registry_count;
 extern const int16_t test_0_deg_mic_left[500];
 extern const int16_t test_0_deg_mic_right[500];
 
-/* Test Case: 30 Degrees */
+/* Test Case: 30.96404014543338 Degrees */
 extern const int16_t test_30_deg_mic_left[500];
 extern const int16_t test_30_deg_mic_right[500];
 
-/* Test Case: -45 Degrees */
+/* Test Case: -43.314302314655315 Degrees */
 extern const int16_t test_minus_45_deg_mic_left[500];
 extern const int16_t test_minus_45_deg_mic_right[500];
 
