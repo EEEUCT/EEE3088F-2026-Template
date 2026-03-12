@@ -46,10 +46,52 @@ These scripts will:
 3.  Compile and test your DoA Engine against **Public Test Vectors** (0°, 30°, -45°, Noise, Quiet).
 
 ### 3. Submission & Autograding (Hidden Tests)
-When you push your code to GitHub, the **Actions** tab runs the "Firmware Autograder". This runs the public tests **PLUS** a set of **Hidden/Secret** tests:
-*   **Edge Cases:** Angles near 0° (Boresight) and 90° (End-fire).
-*   **Stress Tests:** High noise scenarios and randomized angles to prevent hardcoding.
-*   **Pass Criteria:** You must pass ALL tests (Public + Hidden) to receive the green checkmark.
+When you push your code to GitHub, the **Actions** tab runs the "Firmware Autograder". This runs the public tests **PLUS** a set of **Hidden/Secret** tests.
+
+### 📊 **Total Grade Breakdown**
+
+| Module | Weight | Description |
+| :--- | :--- | :--- |
+| **Phase 1: I2C Compliance** | **30%** | Protocol handling, state machine logic, and register map compliance. |
+| **Phase 2: DoA Engine** | **70%** | Signal processing accuracy, noise resilience, and robustness. |
+| **Total** | **100%** | Combined weighted score. |
+
+#### **1. I2C Compliance (30 Marks)**
+
+This section is binary (Pass/Fail) for each category. You either implement the logic correctly or you don't.
+
+*   **Public Logic Check (15%)**
+    *   **Initialization:** Verifies `student_id` and `discovery_freq` are loaded correctly at startup.
+    *   **Trigger:** Verifies the system transitions from `READY` → `BUSY` when the `TRIG` command is received.
+    *   **Completion:** Verifies the system transitions from `BUSY` → `READY` after processing.
+*   **Hidden Stress Test (15%)**
+    *   **Spurious Writes:** The autograder attempts to write to other registers (e.g., `CONFIDENCE`) while the system is `BUSY`. Your logic must ignore these and remain `BUSY`.
+    *   **Invalid Commands:** The autograder sends garbage commands to the Status register while `BUSY`. Your logic must ignore these.
+
+#### **2. DoA Estimation (70 Marks)**
+
+This section uses **Granular Scoring**. You do not need a perfect answer to get marks.
+*   **Max Points per Test:** 10 points.
+*   **Penalty:** -1 point per degree of error. (e.g., 3° error = 7/10 points).
+*   **Failure:** >10° error results in 0 points for that test.
+
+**Test Suite Composition:**
+*   **Public Vectors (Local & Remote):**
+    *   **Standard:** 0°, 30°, -45° (Clean signals).
+    *   **Edge Cases:** 0° with Noise (10dB SNR), 0° Quiet (Low Amplitude).
+    *   **Robustness:** NULL pointer safety check.
+*   **Hidden Vectors (Remote Only):**
+    *   **Full Angle Sweep:** Tests angles from **-70° to +70°** in 10° steps.
+    *   **Dual Mode:** Each angle is tested twice: once with a **Clean** signal and once with **Noise** added.
+
+---
+
+### **✅ The "Green Tick" (Hard Gate)**
+To receive the "Passing" badge on GitHub (Green Tick), you must strictly pass the **Public Tests**:
+1.  **I2C:** Basic State Machine must work.
+2.  **DoA:** Public angles (0, 30, -45) must be accurate to within **±2 degrees**.
+
+*Note: You can get a Green Tick with a score of ~40% (if you fail all hidden tests), but you need the hidden tests to get an A.*
 
 ---
 

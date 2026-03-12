@@ -125,15 +125,15 @@ int main() {
     if (secret_count > 0) {
         printf("HIDDEN TESTS  : %d / %d Passed\n", secret_count - secret_errors, secret_count);
         printf("------------------------------------------------------\n");
-        printf("TOTAL MARKS   : %d / %d\n", total_score, max_score);
+        printf("RAW DOA SCORE : %d / %d\n", total_score, max_score);
     } else {
         printf("(Hidden tests skipped - Local Mode)\n");
     }
     printf("======================================================\n");
 
     // --- ADVISOR FEEDBACK ---
-    // Only show advice if there are failures or the score is below 'A' grade (80%)
-    if (public_errors > 0 || total_score < (max_score * 0.8)) {
+    // Only show advice if there are failures (public or secret)
+    if (public_errors > 0 || secret_errors > 0) {
         printf("\n>>> 💡 DoA ALGORITHM ADVICE <<<\n");
         
         if (robustness_fail) {

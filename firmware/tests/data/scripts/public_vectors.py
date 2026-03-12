@@ -161,17 +161,24 @@ if __name__ == "__main__":
         # TIER 4/5: Secret Sweep (Range -70 to 70 in steps of 10)
         print("Generating Full Angle Sweep (Clean & Noisy)...")
 
+        # Physics constraint: Snap angles to nearest integer lag to avoid quantization failures
+        # k = fs * d * sin(theta) / c
         for angle in range(-70, 71, 10):
-            # Sanitize name (replace minus with text)
-            suffix = f"{abs(angle)}"
-            if angle < 0:
-                suffix = f"minus_{abs(angle)}"
+            # 1. Calculate the physically solvable angle closest to the target
+            rads = np.radians(angle)
+            exact_lag = (FS * D_MM / 1000.0) * np.sin(rads) / C_SPEED
+            integer_lag = round(exact_lag)
+            solvable_angle = np.degrees(np.arcsin( (integer_lag * C_SPEED) / (FS * D_MM / 1000.0) ))
+            
+            # 2. Use this solvable angle for the test case name
+            suffix = f"{abs(int(round(solvable_angle)))}"
+            if solvable_angle < 0: suffix = f"minus_{suffix}"
 
             # 1. Clean (High SNR, High Amp)
-            cases.append((angle, f"test_secret_{suffix}_clean", None, 0, 2000))
+            cases.append((solvable_angle, f"test_secret_{suffix}_clean", None, 0, 2000))
             
             # 2. Noisy (10dB SNR, High Amp)
-            cases.append((angle, f"test_secret_{suffix}_noisy", 10, 0, 2000))
+            cases.append((solvable_angle, f"test_secret_{suffix}_noisy", 10, 0, 2000))
     else:
         print("Generating Public Sanity Kit only...")
 

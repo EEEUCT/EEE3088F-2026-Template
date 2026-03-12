@@ -38,47 +38,22 @@ jobs:
         if: ${{ inputs.solution_mode == true }}
         run: |
           echo "${{ secrets.DOA_SOLUTION_BASE64 }}" | base64 -d > firmware/src/doa_engine.c
-          echo "::notice::Instructor Solution Injected. Expecting 100% pass."
+          echo "${{ secrets.I2C_SOLUTION_BASE64 }}" | base64 -d > firmware/src/i2c_slave.c
+          echo "::notice::Instructor Solutions (DoA + I2C) Injected. Expecting 100% pass."
 
       # -----------------------------------------------------------------------
-      # PHASE 1: I2C & REGISTER MAP AUDIT
-      # -----------------------------------------------------------------------
-      
-      - name: "[I2C] Static Contract Verification"
-        run: python3 firmware/tests/verify_registers.py
-        
-      - name: "[I2C] State Machine Logic Check"
-        run: |
-          gcc -std=c11 \
-            firmware/src/i2c_slave.c \
-            firmware/src/doa_engine.c \
-            firmware/tests/test_i2c_logic.c \
-            -I firmware/include \
-            -o i2c_audit -lm
-          ./i2c_audit
-
-      # -----------------------------------------------------------------------
-      # PHASE 2: DoA ENGINE STRESS TEST (Hidden)
+      # EXECUTE GRADED TEST SUITE
       # -----------------------------------------------------------------------
 
-      - name: "[DoA] Generate Secret Test Vectors"
-        # The --randomize flag creates the secret BORE/END/NOISE macros in public_vectors.h
+      - name: "Generate Secret Vectors"
         run: python3 firmware/tests/data/scripts/public_vectors.py --randomize
 
-      - name: "[DoA] Compile and Run Engine Tests"
+      - name: "Run Weighted Grading (30% I2C / 70% DoA)"
         run: |
-          gcc -std=c11 \
-            firmware/src/doa_engine.c \
-            firmware/tests/test_doa.c \
-            firmware/tests/data/public_vectors.c \
-            -I firmware/include \
-            -I firmware/tests/data \
-            -o test_doa -lm
-          
-          # Run the test, capture output to file, but ensure we still see it in the console (tee)
+          # Run the unified runner, capture output to file, but ensure we still see it in the console (tee)
           # We use pipefail so that if ./test_doa fails, the step still registers as failure.
           set -o pipefail
-          ./test_doa | tee grading_log.txt
+          python3 firmware/tests/run_grading.py --secret | tee grading_log.txt
 
       # -----------------------------------------------------------------------
       # SCORING

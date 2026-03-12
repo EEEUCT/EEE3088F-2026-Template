@@ -16,15 +16,10 @@ int16_t mic_R[1024];
  * maintain I2C stability. Do NOT run DSP code inside this function.
  */
 void handle_i2c_write(uint8_t reg_addr, uint8_t data) {
-    if (reg_addr == REG_SYS_STATUS && data == STATUS_TRIG) {
-        /* ATP-SW-03: Transition to BUSY immediately to acknowledge Rig Master */
-        my_registers.status = STATUS_BUSY;
-
-        /* * TODO: Signal your main loop that a measurement is requested.
-         * Example: set a 'measurement_pending' flag to 1.
-         */
-        /* Note: The main loop polls 'my_registers.status' to detect this request. */
-    }
+    // TODO: Check if the Master is writing to the System Status register (REG_SYS_STATUS)
+    // TODO: If the data written is the Trigger command (STATUS_TRIG),
+    //       update the system status register to STATUS_BUSY.
+    //       This is the handshake that starts the measurement process.
 }
 
 /**
@@ -32,16 +27,11 @@ void handle_i2c_write(uint8_t reg_addr, uint8_t data) {
  * Called once at startup to satisfy ATP-SW-01 and ATP-SW-02.
  */
 void init_registers(float contracted_ft, const char* my_id) {
-    memset(&my_registers, 0, sizeof(i2c_register_map_t));
-
-    /* Pre-load the Discovery constants from the M1 Contract */
-    my_registers.discovery_freq = contracted_ft;
-    
-    /* Ensure Student ID is exactly 9 characters */
-    strncpy(my_registers.student_id, my_id, 9);
-
-    /* Initial state: System is ready for a Trigger */
-    my_registers.status = STATUS_READY;
+    // TODO: Initialize the my_registers struct.
+    //       - Set the discovery frequency register from the 'contracted_ft' parameter.
+    //       - Copy the student ID string into the correct register.
+    //       - Set the initial system status to STATUS_READY.
+    // HINT: Use memset() to zero out the whole struct first.
 }
 
 /**
@@ -50,16 +40,10 @@ void init_registers(float contracted_ft, const char* my_id) {
  * must be <= 50ms.
  */
 void process_doa_update(float d_mm, uint32_t fs) {
-    if (my_registers.status == STATUS_BUSY) {
-        
-        /* 1. Perform the DSP math defined in doa_engine.c */
-        int8_t result = calculate_doa_angle_2mic(mic_L, mic_R, 1024, d_mm, fs);
-
-        /* 2. Update the Memory Map with the results */
-        my_registers.doa_result = result;
-        my_registers.confidence = 100; // Static confidence (DoA engine does not return score)
-
-        /* 3. Handshake: Signal to the Automated Rig that data is now valid */
-        my_registers.status = STATUS_READY;
-    }
+    // TODO: Check if the system status is STATUS_BUSY.
+    // TODO: If it is, call your 'calculate_doa_angle_2mic' function.
+    // TODO: Store the angle result in the 'doa_result' register.
+    // TODO: Set a static confidence value (e.g., 100).
+    // TODO: Finally, update the system status register to STATUS_READY to signal
+    //       that the measurement is complete and data is valid.
 }
