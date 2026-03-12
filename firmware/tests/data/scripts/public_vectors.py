@@ -145,23 +145,40 @@ if __name__ == "__main__":
     if args.randomize:
         # TIER 4/5: Secret randomized test cases
         print("Generating Randomized Stress Tests...")
+
+        # Helper to generate angles that are physically solvable with integer math
+        # d = 40mm, fs = 100kHz -> Max lag is approx 11.6 samples.
+        # We pick a random INTEGER lag 'k', then calculate the exact angle for it.
+        def get_solvable_angle(min_k, max_k):
+            k = np.random.randint(min_k, max_k + 1)
+            # sin(theta) = (k * c) / (fs * d)
+            # d in meters = D_MM / 1000
+            argument = (k * C_SPEED) / (FS * D_MM / 1000.0)
+            # Clamp for safety
+            argument = max(min(argument, 1.0), -1.0)
+            return np.degrees(np.arcsin(argument))
         
-        # 1. Near Boresight (0 deg +/- 5)
-        angle_bore = np.random.uniform(-5, 5)
+        # 1. Near Boresight (Small lags: -1, 0, 1)
+        # k=0 -> 0 deg. k=1 -> ~4.9 deg.
+        angle_bore = get_solvable_angle(-1, 1)
         cases.append((angle_bore, "test_secret_bore", 20, 0.0, 2000))
         
-        # 2. Near Endfire (Approaching +/- 90 deg)
+        # 2. Near Endfire (High lags: 9 to 11)
+        # k=10 -> ~59 deg. k=11 -> ~70 deg.
         side = np.random.choice([-1, 1])
-        angle_end = side * np.random.uniform(60, 75)
+        k_end = side * np.random.randint(9, 11)
+        angle_end = np.degrees(np.arcsin((k_end * C_SPEED) / (FS * D_MM / 1000.0)))
         cases.append((angle_end, "test_secret_end", 20, 0.0, 2000))
 
-        # 3. High Noise / Sensitivity Check (5dB SNR)
-        angle_noise = np.random.uniform(-45, 45)
-        cases.append((angle_noise, "test_secret_noise", 5, 0.1, 2000))
+        # 3. High Noise / Sensitivity Check (10dB SNR is fairer for integer math)
+        angle_noise = get_solvable_angle(-8, 8)
+        cases.append((angle_noise, "test_secret_noise", 10, 0.1, 2000))
 
-        # 4. Moderate Angle / Moderate Noise (12dB SNR)
+        # 4. Moderate Angle / Moderate Noise
+        # k=4 to 8 (approx 20 to 45 deg)
         side_mod = np.random.choice([-1, 1])
-        angle_mod = side_mod * np.random.uniform(25, 65)
+        k_mod = side_mod * np.random.randint(4, 8)
+        angle_mod = np.degrees(np.arcsin((k_mod * C_SPEED) / (FS * D_MM / 1000.0)))
         cases.append((angle_mod, "test_secret_moderate", 12, 0.0, 2000))
     else:
         print("Generating Public Sanity Kit only...")
