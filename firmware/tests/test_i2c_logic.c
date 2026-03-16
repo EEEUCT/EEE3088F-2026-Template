@@ -37,6 +37,17 @@ int main() {
 
     if (!id_ok || !ft_ok || !ready_ok) {
         errors |= 1; // Bit 0: Public test failure
+        printf("\n>>> 💡 I2C INITIALIZATION ADVICE <<<\n");
+        if (!id_ok) {
+            printf("(!) ID FAIL: Check how you assign my_registers.student_id in init_registers().\n");
+            printf("    Hint: You cannot use '=' for arrays in C. Use strncpy().\n");
+        }
+        if (!ft_ok) {
+            printf("(!) FREQ FAIL: Ensure you assigned contracted_ft to my_registers.discovery_freq.\n");
+        }
+        if (!ready_ok) {
+            printf("(!) STATUS FAIL: Ensure my_registers.status is set to STATUS_READY at startup.\n");
+        }
     }
 
     // --- TEST 2: Trigger & State Transition (ATP-SW-03) ---
@@ -48,6 +59,8 @@ int main() {
 
     if (!busy_ok) {
         printf(">>> Error: System failed to enter BUSY state after Trigger.\n");
+        printf("    Hint: Check handle_i2c_write(). Did you verify reg_addr == REG_SYS_STATUS\n");
+        printf("    and data == STATUS_TRIG before setting the status to STATUS_BUSY?\n");
         errors |= 1;
     }
 
@@ -60,6 +73,8 @@ int main() {
 
     if (!back_to_ready) {
         printf(">>> Error: System failed to return to READY after processing.\n");
+        printf("    Hint: Check process_doa_update(). After calculating the angle,\n");
+        printf("    you MUST set my_registers.status = STATUS_READY to finish the handshake.\n");
         errors |= 1;
     }
 

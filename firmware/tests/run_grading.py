@@ -118,6 +118,10 @@ def main():
     print("\n======================================================")
     print(f"TOTAL MARKS : {final_int} / 100")
     print("======================================================")
+    
+    if final_int == 100:
+        print("\n>>> 🌟 CONGRATULATIONS! PERFECT SCORE! 🌟")
+        print(">>> You are ready to submit Milestone 3.\n")
 
     # Cleanup
     for f in [f"i2c_audit{exe_ext}", f"test_doa{exe_ext}"]:
