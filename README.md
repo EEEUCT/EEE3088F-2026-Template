@@ -1,6 +1,8 @@
-# EEE3088F: DoA Project Repository (Group Phase)
+# EEE3088F: DoA Project Repository
 
-This repository hosts the design, analysis, and fabrication data for the **Acoustic Direction of Arrival (DoA)** project.
+This repository hosts the design, firmware, integration logic, and final forensic audit for the **Acoustic Direction of Arrival (DoA)** project. 
+
+**Note:** This repository template is used across all milestones. Milestones 1 and 2 are **Group Submissions**. Milestones 3, 4, and 5 are **Individual Submissions**.
 
 ## 📂 Project Structure
 
@@ -44,6 +46,8 @@ These scripts will:
 1.  Check your I2C Register struct for compliance.
 2.  Compile and test your I2C logic state machine.
 3.  Compile and test your DoA Engine against **Public Test Vectors** (0°, 30°, -45°, Noise, Quiet).
+
+**Note on Physics:** The provided public test vectors assume a **40.0mm** microphone spacing. The autograder will provide this value to your `calculate_doa_angle_2mic` function. Ensure your math uses the `d_mm` parameter provided to the function rather than a hardcoded constant.
 
 ### 3. Submission & Autograding (Hidden Tests)
 When you push your code to GitHub, the **Actions** tab runs the "Firmware Autograder". This runs the public tests **PLUS** a set of **Hidden/Secret** tests.
@@ -115,6 +119,22 @@ To receive the "Passing" badge on GitHub (Green Tick), you must strictly pass th
 
 ---
 
-## 👥 Team
-* **Student 1:** [Name/Student Number]
-* **Student 2:** [Name/Student Number]
+## 🔍 Milestone 5: The Final Audit (Forensic Analysis)
+Once your hardware is fabricated and your firmware is flashed, you will perform a final performance audit.
+* **Location:** `/analysis/M5_audit.py`
+* **Task:** Capture real-world data from your physical rig and compare it against the synthetic baselines generated in M3.
+
+---
+
+## 👤 Student / Team Information
+*Fill out the section relevant to your current assignment phase.*
+
+**For Group Phase (M1-M2):**
+* **Team Number:** [e.g., Team 12]
+* **Student 1:** [Name & Student Number]
+* **Student 2:** [Name & Student Number]
+
+**For Individual Phase (M3-M5):**
+* **Name:** [Student Name]
+* **Student Number:** [Student Number]
+* **Original Team Reference:** [e.g., Team 12]
