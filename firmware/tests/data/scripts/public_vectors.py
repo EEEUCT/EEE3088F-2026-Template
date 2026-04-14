@@ -104,6 +104,14 @@ def write_c_files(test_cases, folder_path, is_secret_mode):
         c.write(" */\n\n")
         c.write('#include "public_vectors.h"\n\n')
 
+        # Export the 67dB SPL 'Quiet' trace as a CSV for the students' M3 Block 5 Analysis
+        csv_path = os.path.join(folder_path, "..", "..", "..", "analysis", "data_captures", "Golden_Trace_67dB.csv")
+        os.makedirs(os.path.dirname(csv_path), exist_ok=True)
+        with open(csv_path, 'w') as csv:
+            csv.write("Sample_Index,Mic_Left,Mic_Right\n")
+            # We will populate this when we hit the quiet test case
+            pass
+
         for angle, name, snr, dc, amp in test_cases:
             l, r = generate_signal_pair(angle, snr, dc, amp)
             
@@ -121,6 +129,12 @@ def write_c_files(test_cases, folder_path, is_secret_mode):
             c.write(f"/* Test Case: {angle} Degrees */\n")
             c.write(f"{prefix}const int16_t {name}_mic_left[{N_SAMPLES}] = {{{', '.join(map(str, l))}}};\n")
             c.write(f"{prefix}const int16_t {name}_mic_right[{N_SAMPLES}] = {{{', '.join(map(str, r))}}};\n\n")
+            
+            # Write to CSV if it's the golden trace
+            if name == "test_0_deg_quiet":
+                with open(csv_path, 'a') as csv:
+                    for i in range(N_SAMPLES):
+                        csv.write(f"{i},{l[i]},{r[i]}\n")
 
         h.write("\n#endif\n")
         

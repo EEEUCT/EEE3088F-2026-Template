@@ -35,7 +35,7 @@ int run_sanity_check(const char* name, const int16_t* l, const int16_t* r, int8_
     error = abs(result - expected);
     *points_out = calculate_points(error);
 
-    printf("[%-25s] Expected: %3d, Got: %3d (Err: %2d deg) ", name, expected, result, error);
+    printf("[%-25s] Expected: %3d, Got: %3d (Err: %2d deg) [Time: %.3f ms] ", name, expected, result, error, time_ms);
 
     // Tolerance of +/- 2 degrees for clean synthetic data
     if (error <= 2) {
